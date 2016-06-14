@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+	<title>Document</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+	    font-family: "微软雅黑"
+    }
+	.startpage{
+    	width: 1349px;
+    	height: 650px;
+        overflow: hidden;
+        background-image: url(img/ttdzym.jpg);
+        position: relative;
+	}
+    .ingame{
+        width: 233px;
+        height: 81px;
+        background-image: url(img/button.png);
+        background-size: 100%;
+        position: absolute;
+        left:558px;
+        top:205px;
+    }
+	.box{
+		width: 1349px;
+		height: 650px;
+		position: relative;
+        margin: 0 auto;
+        overflow: hidden;
+		background: url(img/ttdz.jpg) no-repeat;
+        /*display: none;*/
+	}
+	.zi{
+		font-size: 50px;
+		color: #333;
+		width: 90px;
+		height: 90px;
+		line-height: 50px;
+		text-align: right;
+		position: absolute;
+		background-image: url(img/tt5.png);
+	}
+</style>
+<body>   
+        <div class="startpage">
+            <div class="ingame"></div>  
+        </div>
+    	<div class="box"></div>
+</body>
+<!-- <script src="jquery-1.12.0.js"></script> -->
+<!-- <script src="function/function.js"></script> -->
+<script>
+    // console.log(document.documentElement.clientWidth);
+    // console.log(document.documentElement.clientHeight);
+    var ingame=document.querySelector(".ingame");
+    var startpage=document.querySelector(".startpage");
+    var box=document.getElementsByClassName('box')[0];
+    var shuliang=5;  //同时落下5个
+    ingame.onclick=function(){
+        startpage.style.display="none";
+        box.style.display="block";
+    }
+    // $(".ingame").on("click",function(){
+    //     $(".startpage").css({display:'none'});
+    //     $(".box").css({display:'block'});
+    // })
+    var zimujihe={};//新建一个集合，将随机产生的字母加进去
+    
+    var createZimu=function(){//创建函数
+        do{var zimu=String.fromCharCode(Math.floor(Math.random()*25+97));
+          }while(zimujihe[zimu])
+          //定义字母变量，将所有的字母按照他的ascll编码随机取整，再翻译为字母
+        // console.log(zimu);
+        var el=document.createElement("div");//新建一个div
+        el.innerHTML=zimu;//显示内容为zimu变量内容
+        el.classList.add("zi");
+        // var r=Math.floor(Math.random()*255);
+        // var g=Math.floor(Math.random()*255);
+        // var b=Math.floor(Math.random()*255);
+        // el.style.background="rgb("+r+","+g+","+b+")";//给他添加类名为zi
+        box.appendChild(el);//将这个div作为节点放到box的最后边
+        zimujihe[zimu]=el;//将所有的新建的div放到字母集合里
+        // console.log(zimujihe);
+
+        el.style.left=Math.floor(Math.random()*(box.offsetWidth-el.offsetWidth))+"px";//让el在box里自由移动
+        var ran=Math.ceil(Math.random()*5);
+        zimujihe[zimu]={top:0,yuansu:el,off:ran};
+
+    }
+    for(var i=0;i<shuliang;i++){
+        createZimu();
+    }
+
+
+    var removeZimu=function(zi){
+        var el=zimujihe[zi].yuansu;
+        el.parentElement.removeChild(el);
+        delete zimujihe[zi];
+    }
+
+    document.onkeyup=function(e){
+        var key=String.fromCharCode(e.keyCode).toLowerCase();
+        if(e.keyCode===32){
+            toggleGame();
+            return;
+        }
+        if(zimujihe[key]){
+
+            removeZimu(key);
+            createZimu();
+        }
+    }
+    var xx=box.offsetHeight;
+    var diao=function(){
+        var arr=[];
+        for(var i in zimujihe){
+            var data=zimujihe[i];
+            var el=data.yuansu;
+            data.top+=data.off;
+            el.style.top=data.top+"px";
+            if(data.top>xx){
+                arr.push(i);
+            }
+        }
+        if(arr.length!==0){
+            removeZimu(arr[0]);
+            createZimu();
+        }
+    }
+
+    var timeId=setInterval(diao,30);
+    console.log(timeId);
+    var toggleGame=function(){
+        if(timeId){
+            clearInterval(timeId);
+            timeId=null;
+        }else{
+            timeId=setInterval(diao,30);
+        }
+    }
+	
+</script>
+</html>
